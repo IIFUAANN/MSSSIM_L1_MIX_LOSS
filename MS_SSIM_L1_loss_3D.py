@@ -36,19 +36,16 @@ def gaussian_filter(input: Tensor, win: Tensor) -> Tensor:
     assert all([ws == 1 for ws in win.shape[1:-1]]), win.shape
     if len(input.shape) == 4:
         conv = F.conv2d
-        stride = [1, 1]
     elif len(input.shape) == 5:
         conv = F.conv3d
-        stride = 1
     else:
-        stride = 1
         raise NotImplementedError(input.shape)
 
     C = input.shape[1]
     out = input
     for i, s in enumerate(input.shape[2:]):
         if s >= win.shape[-1]:
-            out = conv(out, weight=win.transpose(2 + i, -1), stride=stride, padding=0, groups=C)
+            out = conv(out, weight=win.transpose(2 + i, -1), stride=1, padding=0, groups=C)
         else:
             warnings.warn(
                 f"Skipping Gaussian Smoothing at dimension 2+{i} for input: {input.shape} and win size: {win.shape[-1]}"
